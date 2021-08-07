@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>photo-magnifier</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        display: flex;
+        align-items: flex-start;
+        padding: 15px;
+      }
+      .small {
+        position: relative;
+        margin-right: 15px;
+        cursor: move;
+      }
+      .small img {
+        display: block;
+        width: 400px;
+      }
+      .big {
+        visibility: hidden;
+        width: 400px;
+        height: 400px;
+        overflow: hidden;
+      }
+      .big img {
+        display: block;
+        width: 800px;
+      }
+      .mask {
+        visibility: hidden;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 200px;
+        height: 200px;
+        background-image: url('./images/point.png');
+        pointer-events: none;
+      }
+      .small:hover .mask {
+        visibility: visible;
+      }
+      .small:hover ~ .big {
+        visibility: visible;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="small">
+        <img src="./images/liya.jpg" alt="" />
+        <div class="mask"></div>
+      </div>
+      <div class="big">
+        <img src="./images/liya.jpg" alt="" />
+      </div>
+    </div>
+  </body>
+  <script>
+    const small = {
+      element: document.querySelector('.small'),
+      width: 400,
+      height: 320,
+    };
+    const smallRect = small.element.getBoundingClientRect();
+    const mask = {
+      element: document.querySelector('.mask'),
+      width: 200,
+      height: 200,
+      halfWidth: 100,
+      halfHeight: 100,
+    };
+    const big = document.querySelector('.big');
+    const bigImg = document.querySelector('.big img');
+    let x, y;
+    const bounding = {
+      left: 0,
+      right: small.width - mask.width,
+      top: 0,
+      bottom: small.height - mask.height,
+    };
+    
+    small.element.addEventListener('mousemove', function (e) {
+      x = e.clientX - smallRect.left - mask.halfWidth;
+      y = e.clientY - smallRect.top - mask.halfHeight;
+    
+      if (x < bounding.left) {
+        x = bounding.left;
+      } else if (x > bounding.right) {
+        x = bounding.right;
+      }
+      if (y < bounding.top) {
+        y = bounding.top;
+      } else if (y > bounding.bottom) {
+        y = bounding.bottom;
+      }
+      mask.element.style.transform = 'translate3d(' + x + 'px ,' + y + 'px, 0)';
+      bigImg.style.transform =
+        'translate3d(' + x * -2 + 'px ,' + y * -2 + 'px, 0)';
+    });
+  </script>
+</html>
